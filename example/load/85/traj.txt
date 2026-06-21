@@ -1,0 +1,7 @@
+# Cycle: 77, status: ACC
+#     Step              Filename       index    vel
+         0  000_5731_249_trajB.traj           2     -1
+         1  000_5731_249_trajB.traj           1     -1
+         2  000_5731_249_trajB.traj           0     -1
+         3  000_5731_250_trajF.traj           1      1
+         4  000_5731_250_trajF.traj           2      1

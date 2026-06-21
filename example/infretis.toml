@@ -1,0 +1,163 @@
+[simulation]
+interfaces = [
+    -0.7,
+    -0.515,
+    -0.455,
+    -0.4,
+    -0.34,
+    -0.26,
+    -0.23,
+    -0.195,
+    0.7,
+]
+load_dir = "load"
+
+[runner]
+workers = 2
+wmdrun = [
+    0,
+    0,
+    0,
+    0,
+]
+
+[engine]
+class = "ase"
+engine = "ase"
+temperature = 300
+input_path = "."
+timestep = 0.5
+subcycles = 2
+integrator = "langevin"
+langevin_fixcm = true
+langevin_friction = 0.005
+
+[engine.calculator_settings]
+module = "xtbcalc.py"
+class = "XTBCalculator"
+
+
+steps = 80
+seed = 0
+load_dir = "load"
+shooting_moves = [
+    "sh",
+    "sh",
+    "wf",
+    "wf",
+    "wf",
+]
+
+[simulation.tis_set]
+maxlength = 400
+allowmaxlength = false
+zero_momentum = true
+n_jumps = 3
+interface_cap = 0.2
+
+[orderparameter]
+class = "Dihedral"
+index = [
+    0,
+    3,
+    2,
+    1,
+]
+periodic = false
+
+[output]
+data_dir = "./"
+screen = 1
+pattern = false
+delete_old = true
+keep_maxop_trajs = true
+
+[infinit]
+cstep = 1
+initial_conf = "conf.traj"
+steps_per_iter = [
+    40,
+    80,
+    150,
+    150,
+]
+pL = 0.3
+skip = 0.05
+lamres = 0.005
+prev_Pcross = 0.392814650900513
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+[cvmat]
+# Grid settings for the CV matrix.
+n_grid     = 100       # total number of grid points spanning [min, max] interface
+selection  = [0]      # which grid indices to compute CVs at (list of ints)
+start_grid = 0         # alternative: use these with --grid-mode range
+end_grid   = 99
+step_size  = 1
+nskip      = 0       # burn-in: fraction of steps to skip (0.1 = first 10%)
+
+# ─────────────────────────────────────────────────────────────────────────────
+[ppa]
+output_dir = "CVs"     # where HDF5 output files are written
+workers    = 1         # number of parallel workers (increase for multi-core)
+lambda_c   = [0]       # index of the "reactant" interface λ_c
+lambda_r   = [99]       # index of the "product" interface  λ_r
+n_best_obo = 3
+cv_mode = "n_best"
+lambda_c_opt = 0
+lambda_r_opt = 99
+n_best_lin = 0
+n_try_lin  = 0
+n_cvar_list = [1]
+optimizer   = "dual_annealing"
+
+[ppa.tmat]
+lambda_r_max      = 5
+n_cvar_list       = [1]
+top_k             = 3
+calculate_missing = false
+calc_full         = false
+
+[ppa.sg]
+sg_grid            = 500
+sg_polyorder       = 2
+sg_window_frac     = "1/16"
+grid_expand_factor = 1.5
+n_hist_bins        = 50
+discrete_max_unique = 50
+
+[ppa.screening]
+initial_temp = 26150.0
+maxiter_lin2 = 100
+maxiter_lin3 = 500
+
+# ─────────────────────────────────────────────────────────────────────────────
+# These settings are required by the pipeline config. Set safe defaults.
+[predictive_power]
+chemical_system   = "NH3 inversion"
+n_cvar_list       = [1]
+n_best            = 10
+optimizer         = "dual_annealing"
+optimizer_steps   = 100
+parallel_procs    = 1
+h5_input          = "CVs/100/CVmat.h5"
+calculate_missing = false
+recalc_lincomb    = false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Topology: tells CV_builder which atoms are in your system.
+# "xyz_data" reads a standard .xyz file — no other information needed.
+[topology]
+system    = "xyz_data"       # built-in XYZ reader (recommended for new users)
+file      = "conf.xyz"    # path to your topology file (relative to this TOML)
+#cell_size = 0.0              # periodic box length in Å; 0 = non-periodic
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CV suite: tells CV_builder which collective variables to compute.
+# Start with MinimalCVSuite (one distance CV) and add more as needed.
+[cv_modules]
+module = "../CV_builder/CV_manager/minimal_suite.py"
+class  = "MinimalCVSuite"
+pairs  = [[0, 1]]
+use_pbc = true

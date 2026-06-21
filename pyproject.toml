@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cv-profet"
+version = "0.1.0"
+description = "Collective Variable Predictions OF Ellusive Transitions"
+readme = "CV_builder/README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "scipy>=1.10",
+  "h5py>=3.8",
+  "matplotlib>=3.7",
+  "ase>=3.22",
+  "toml>=0.10",
+]
+
+[project.scripts]
+profet = "profet:main"
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+]
+
+[tool.setuptools]
+py-modules = ["profet", "cv_builder", "cv_analyze"]
+packages = []
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = ["test_*.py"]
+addopts = "-q"
+markers = [
+  "heavy: slower integration smoke tests",
+]

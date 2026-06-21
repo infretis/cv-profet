@@ -1,0 +1,11 @@
+{
+    "include": [
+        "CV_builder",
+        "ppa"
+    ],
+    "extraPaths": [
+        "CV_builder",
+        "CV_builder/molecule_system",
+        "ppa"
+    ]
+}

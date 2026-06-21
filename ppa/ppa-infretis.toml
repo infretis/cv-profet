@@ -1,0 +1,127 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# PPA configuration — standalone example
+#
+# This file contains every setting that ppa/analyze.py reads.
+# Copy it to your project root, rename it infretis.toml (or pass --toml flag),
+# and fill in the starred (★) required fields for your system.
+#
+# Usage:
+#   python ppa/analyze.py --screen         # rank all CVs
+#   python ppa/analyze.py --tmat           # build T-matrix heatmaps
+#   python ppa/analyze.py --diagnose       # detailed diagnostics plots
+#   python ppa/analyze.py --optimize       # refine linear-combo weights
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [simulation] — read by ppa to get the interface positions and n_grid size
+# ★ REQUIRED: interfaces must match the values used in your RETIS run.
+# ─────────────────────────────────────────────────────────────────────────
+[simulation]
+interfaces = [1.09, 1.10, 1.11, 1.12, 1.13, 1.15, 10.0]
+#             ^^ Replace with your actual RETIS interface list ^^
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [cvmat] — defines the CV-matrix grid and burn-in
+# ★ REQUIRED: n_grid must match the n_grid used in CV_builder/main.py.
+# ─────────────────────────────────────────────────────────────────────────
+[cvmat]
+n_grid    = 890          # ★ Total grid points; sets the output folder CVs/890/
+step_size = 1            # Step size along the order-parameter grid
+start_grid = 0           # Start of the screening range (grid index)
+end_grid   = 50          # End of the screening range (grid index)
+selection  = []          # If non-empty AND grid_mode="selection" → use these exact indices
+nskip      = 0.1         # Burn-in: 0 < nskip < 1 = fraction; nskip >= 1 = absolute count
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [ppa] — unified settings for screener, T-matrix, and diagnostics
+# ★ REQUIRED: lambda_c and lambda_r must be valid grid indices.
+# ─────────────────────────────────────────────────────────────────────────
+[ppa]
+output_dir = "CVs"       # Root output folder; results go to output_dir/<n_grid>/
+
+workers    = 4           # ★ Number of parallel workers (match your CPU count)
+
+# Lambda pairs — every valid (lc, lr) combination where lr > lc is screened.
+# Set these to the committed and reactive interfaces you care about most.
+lambda_c = [6]           # ★ Committed-interface grid index (or list for multiple)
+lambda_r = [26]          # ★ Reactive-interface grid index (or list for multiple)
+
+# ── Screening output budget ───────────────────────────────────────────────
+n_best_obo  = 50         # How many top one-by-one CVs to save in screen.h5
+n_best_lin  = 10         # How many top linear-combination CVs to save
+n_try_lin   = 5          # How many top OBO CVs to try combining for lin2/lin3
+n_cvar_list = [1]        # Combination sizes to screen: 1=OBO, 2=lin2, 3=lin3
+optimizer   = "dual_annealing"   # Optimizer for linear combo search
+
+# ── CV selection for --tmat and --diagnose ───────────────────────────────
+# cv_mode = "manual"  → specify CVs explicitly in the lists below
+# cv_mode = "n_best"  → auto-pick top CVs from screen.h5
+cv_mode = "n_best"
+
+# Reference (lc, lr) pair used when cv_mode = "n_best" to pick from screen.h5
+lambda_c_opt = 6
+lambda_r_opt = 26
+
+# Explicit CV selection (used when cv_mode = "manual")
+# Format for OBO:  "module_name::column_name"
+# Format for lin2: "module_name::col_a + module_name::col_b"
+obo_from_toml = [
+  # "IonO::IonO4",          # ← uncomment and fill in your CV names here
+  # "steinhardt_q4::Q4",
+]
+lin2_from_toml = [
+  # "IonO::IonO4 + steinhardt_q4::Q4",
+]
+lin3_from_toml = []
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [ppa.tmat] — T-matrix sweep settings
+# Only needed when running:  python ppa/analyze.py --tmat
+# ─────────────────────────────────────────────────────────────────────────
+[ppa.tmat]
+lambda_r_max      = 30   # Upper bound for the T-matrix grid sweep
+n_cvar_list       = [1]  # Which combination sizes to include: [1]=OBO, [1,2]=OBO+lin2
+top_k             = 5    # How many CVs per mode to include (when cv_mode="n_best")
+calculate_missing = false # Re-run CV_builder if grid points are missing - not sure if implemented yet
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [ppa.sg] — Savitzky-Golay smoothing for T-score computation
+# Defaults work for most systems. Tune sg_window_frac if curves look noisy.
+# ─────────────────────────────────────────────────────────────────────────
+[ppa.sg]
+sg_grid            = 2000    # Uniform interpolation grid points for smoothing
+sg_polyorder       = 2       # SG polynomial order
+sg_window_frac     = "1/16"  # SG window as fraction of CV range (try "1/8" if noisy)
+grid_expand_factor = 1.5     # x-axis extends to factor × [xmin, xmax]
+n_hist_bins        = 50      # Bins for raw histogram overlay in diagnostic plots
+discrete_max_unique = 50     # CVs with ≤ N unique integer values → treated as discrete
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# [ppa.screening] — dual-annealing tuning for linear-combination search
+# Only relevant when running --screen with n_cvar >= 2.
+# ─────────────────────────────────────────────────────────────────────────
+[ppa.screening]
+initial_temp  = 26150.0  # Annealing start temperature (higher = more exploration)
+maxiter_lin2  = 200      # Max iterations for two-CV combos
+maxiter_lin3  = 1000     # Max iterations for three-CV combos (slow — increase with care)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# MINIMUM REQUIRED SETTINGS — quick reference
+#
+#   [simulation]  interfaces = [...]        ← your RETIS interface list
+#   [cvmat]       n_grid     = <N>          ← must match CV_builder output
+#   [ppa]         workers    = <N>          ← CPU count
+#                 lambda_c   = [<idx>]      ← committed interface grid index
+#                 lambda_r   = [<idx>]      ← reactive interface grid index
+#                 lambda_c_opt = <idx>      ← reference committed interface grid index
+#                 lambda_r_opt = <idx>      ← reference reactive interface grid index
+#
+# Everything else has sensible defaults shown above.
+# ─────────────────────────────────────────────────────────────────────────

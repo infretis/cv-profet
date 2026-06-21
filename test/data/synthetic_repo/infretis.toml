@@ -1,0 +1,3 @@
+# Synthetic minimal config used by CLI smoke tests
+[meta]
+name = "synthetic"
