@@ -91,9 +91,15 @@ More detailed documentation:
 
 ## Literature
 
-Add the relevant references here.
+Primary method paper: 
+- [Analyzing Complex Reaction Mechanisms Using Path Sampling](https://pubs.acs.org/doi/10.1021/acs.jctc.6b00642)
 
-- Primary method paper: `[placeholder for citation/link]`
-- infRETIS / RETIS background: `[placeholder for citation/link]`
-- Collective-variable or predictive-analysis paper: `[placeholder for citation/link]`
-- Application paper / case study: `[placeholder for citation/link]`
+
+infRETIS background: 
+- [Highly parallelizable path sampling with minimal rejections using asynchronous replica exchange and infinite swaps](https://www.pnas.org/doi/10.1073/pnas.2318731121)
+- [Exchanging Replicas with Unequal Cost, Infinitely and Permanently](https://pubs.acs.org/doi/full/10.1021/acs.jpca.2c06004)
+
+
+Application papers:
+- [NaCl Dissociation Explored Through Predictive Power Path Sampling Analysis](https://pubs.acs.org/doi/10.1021/acs.jctc.5c00054)
+- [Local initiation conditions for water autoionization](https://www.pnas.org/doi/10.1073/pnas.1714070115)
