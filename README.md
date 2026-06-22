@@ -95,10 +95,10 @@ Primary method papers:
 - [Analyzing Complex Reaction Mechanisms Using Path Sampling](https://pubs.acs.org/doi/10.1021/acs.jctc.6b00642)
 - [NaCl Dissociation Explored Through Predictive Power Path Sampling Analysis](https://pubs.acs.org/doi/10.1021/acs.jctc.5c00054)
 
-infRETIS background: 
+infRETIS / RETIS background: 
 - [Highly parallelizable path sampling with minimal rejections using asynchronous replica exchange and infinite swaps](https://www.pnas.org/doi/10.1073/pnas.2318731121)
 - [Exchanging Replicas with Unequal Cost, Infinitely and Permanently](https://pubs.acs.org/doi/full/10.1021/acs.jpca.2c06004)
-
+- [Reaction Rate Calculation by Parallel Path Swapping](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.268301)
 
 Application papers:
 - [Local initiation conditions for water autoionization](https://www.pnas.org/doi/10.1073/pnas.1714070115)
